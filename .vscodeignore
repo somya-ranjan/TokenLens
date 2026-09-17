@@ -1,0 +1,12 @@
+.vscode/**
+.vscode-test/**
+.github/**
+.husky/**
+tests/**
+preview.html
+bun.lock
+.prettierrc.json
+.prettierignore
+*.vsix
+*.sha256
+src/utils/mockDataGenerator.js

@@ -1,0 +1,1081 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TokenLens UI Preview - VS Code Mockup</title>
+    <link rel="stylesheet" href="media/styles.css" />
+    <style>
+      :root {
+        --vscode-editor-background: #181a1f;
+        --vscode-sideBar-background: #1e222b;
+        --vscode-panel-border: rgba(255, 255, 255, 0.1);
+        --vscode-foreground: #d7dae0;
+        --vscode-descriptionForeground: #8b92a5;
+        --vscode-font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      body {
+        background: #0f1117;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      /* Top Mock Header */
+      .mock-header {
+        background: #141720;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .mock-badge {
+        background: rgba(13, 148, 136, 0.15);
+        border: 1px solid rgba(45, 212, 191, 0.3);
+        color: #2dd4bf;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      /* Mock IDE Workspace */
+      .mock-workspace {
+        display: flex;
+        flex: 1;
+        height: calc(100vh - 50px);
+        overflow: hidden;
+      }
+
+      /* Mock Activity Bar */
+      .mock-activitybar {
+        width: 50px;
+        background: #11141c;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 12px;
+        gap: 16px;
+      }
+
+      .mock-activity-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: rgba(13, 148, 136, 0.2);
+        border-left: 2px solid #2dd4bf;
+      }
+
+      /* Mock Sidebar Frame */
+      .mock-sidebar {
+        width: 310px;
+        min-width: 280px;
+        background: var(--vscode-sideBar-background);
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        overflow-y: auto;
+      }
+
+      /* Mock Editor Tab */
+      .mock-editor {
+        flex: 1;
+        background: var(--vscode-editor-background);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .mock-tabs {
+        background: #141720;
+        display: flex;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .mock-tab {
+        padding: 8px 16px;
+        background: var(--vscode-editor-background);
+        border-top: 2px solid #0d9488;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 12px;
+        font-weight: 500;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Mock Top Bar -->
+    <div class="mock-header">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+          <circle
+            cx="32"
+            cy="32"
+            r="28"
+            stroke="#2DD4BF"
+            stroke-width="4"
+            stroke-dasharray="8 4"
+            opacity="0.4"
+          />
+          <circle cx="32" cy="32" r="16" stroke="#0D9488" stroke-width="4" />
+          <circle cx="32" cy="32" r="6" fill="#2DD4BF" />
+        </svg>
+        <span style="font-weight: 700; color: #fff; font-size: 14px"
+          >TokenLens UI Preview</span
+        >
+        <span class="text-sm" style="color: #8b92a5"
+          >(Sidebar + Editor Tab Live Simulator)</span
+        >
+      </div>
+      <div class="mock-badge">
+        Press F5 inside VS Code to launch extension in VS Code
+      </div>
+    </div>
+
+    <div class="mock-workspace">
+      <!-- Activity Bar -->
+      <div class="mock-activitybar">
+        <div class="mock-activity-icon" title="TokenLens Usage">
+          <img
+            src="media/icon.svg"
+            width="22"
+            height="22"
+            alt="TokenLens Icon"
+          />
+        </div>
+      </div>
+
+      <!-- 1. SIDEBAR VIEW -->
+      <div class="mock-sidebar">
+        <div class="sidebar-container">
+          <!-- Header with Live Pulse -->
+          <div class="sidebar-header">
+            <div class="sidebar-title-group">
+              <span class="title-md" style="color: #ffffff">Token Usage</span>
+            </div>
+            <div class="live-badge">
+              <span class="pulse-dot"></span>
+              <span>Live</span>
+            </div>
+          </div>
+
+          <!-- Quick Stat Cards -->
+          <div class="sidebar-stats-row">
+            <div class="sidebar-stat-box">
+              <div>
+                <div class="sidebar-stat-label">Tokens</div>
+                <div class="sidebar-stat-value" id="sidebar-tokens">128.4K</div>
+              </div>
+              <div class="text-xs" id="sidebar-requests" style="color: #2dd4bf">
+                24 reqs
+              </div>
+            </div>
+
+            <div class="sidebar-stat-box">
+              <div>
+                <div class="sidebar-stat-label">Cost</div>
+                <div
+                  class="sidebar-stat-value"
+                  id="sidebar-cost"
+                  style="color: #2dd4bf"
+                >
+                  $0.42
+                </div>
+              </div>
+              <div
+                class="text-xs"
+                style="color: var(--tl-text-muted); font-weight: 600"
+              >
+                Today
+              </div>
+            </div>
+          </div>
+
+          <!-- Token Breakdown -->
+          <div class="sidebar-breakdown">
+            <div
+              style="display: flex; justify-content: space-between"
+              class="text-xs"
+            >
+              <span
+                id="sidebar-prompt-tokens"
+                style="color: var(--tl-text-muted)"
+                >Prompt: 82.0K (64%)</span
+              >
+              <span id="sidebar-comp-tokens" style="color: var(--tl-text-muted)"
+                >Comp: 46.4K (36%)</span
+              >
+            </div>
+            <div class="progress-track">
+              <div
+                class="progress-fill-prompt"
+                id="sidebar-prompt-bar"
+                style="width: 64%"
+              ></div>
+              <div
+                class="progress-fill-completion"
+                id="sidebar-comp-bar"
+                style="width: 36%"
+              ></div>
+            </div>
+          </div>
+
+          <!-- 7-day Mini Sparkline -->
+          <div class="sidebar-sparkline-card card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <span
+                class="text-xs"
+                style="
+                  font-weight: 600;
+                  text-transform: uppercase;
+                  color: var(--tl-text-muted);
+                "
+                >7-Day Trend</span
+              >
+            </div>
+            <svg
+              id="sidebar-sparkline"
+              viewBox="0 0 240 40"
+              style="width: 100%; height: 40px; overflow: visible"
+            ></svg>
+          </div>
+
+          <!-- Primary Actions -->
+          <div class="sidebar-actions">
+            <button
+              class="btn btn-primary"
+              id="btn-open-dashboard"
+              style="width: 100%"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+              </svg>
+              Open full dashboard
+            </button>
+
+            <div style="display: flex; gap: 6px; margin-top: 6px">
+              <button
+                class="btn btn-secondary btn-sm"
+                id="btn-sidebar-sync"
+                style="flex: 1"
+                title="Sync account usage from OpenAI & Anthropic"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M20 16.2A4.5 4.5 0 0 0 17.5 8h-1.8A7 7 0 1 0 4 14.9"
+                  ></path>
+                  <polyline points="8 17 12 21 16 17"></polyline>
+                  <line x1="12" y1="12" x2="12" y2="21"></line>
+                </svg>
+                Sync
+              </button>
+              <button
+                class="btn btn-secondary btn-sm"
+                id="btn-sidebar-refresh"
+                style="flex: 1"
+                title="Refresh metrics"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"
+                  ></path>
+                  <path d="M21 3v5h-5"></path>
+                  <path
+                    d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"
+                  ></path>
+                  <path d="M3 21v-5h5"></path>
+                </svg>
+                Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. FULL DASHBOARD EDITOR TAB -->
+      <div class="mock-editor">
+        <div class="mock-tabs">
+          <div class="mock-tab">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#0D9488"
+              stroke-width="2"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+            </svg>
+            AI Usage Dashboard
+          </div>
+        </div>
+
+        <!-- Dashboard HTML Body -->
+        <div
+          id="chart-tooltip"
+          style="
+            display: none;
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+            background: rgba(18, 24, 38, 0.95);
+            border: 1px solid var(--tl-primary-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 11px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+          "
+        ></div>
+
+        <div class="dashboard-container">
+          <!-- Top Bar -->
+          <header class="dashboard-topbar">
+            <div class="dashboard-heading">
+              <h1>
+                <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r="28"
+                    stroke="#2DD4BF"
+                    stroke-width="4"
+                    stroke-dasharray="8 4"
+                    opacity="0.4"
+                  />
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r="16"
+                    stroke="#0D9488"
+                    stroke-width="4"
+                  />
+                  <circle cx="32" cy="32" r="6" fill="#2DD4BF" />
+                </svg>
+                AI Usage Dashboard
+              </h1>
+              <div class="text-sm" style="margin-top: 4px">
+                Token usage, estimated costs, and request latency
+              </div>
+            </div>
+
+            <div class="dashboard-controls">
+              <div class="time-range-group">
+                <button class="time-range-btn active" data-range="today">
+                  Today
+                </button>
+                <button class="time-range-btn" data-range="7d">7 Days</button>
+                <button class="time-range-btn" data-range="30d">30 Days</button>
+                <button class="time-range-btn" data-range="all">
+                  All Time
+                </button>
+              </div>
+
+              <button
+                class="btn btn-secondary btn-sm"
+                id="btn-sync"
+                title="Sync usage from OpenAI & Anthropic cloud accounts"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M20 16.2A4.5 4.5 0 0 0 17.5 8h-1.8A7 7 0 1 0 4 14.9"
+                  ></path>
+                  <polyline points="8 17 12 21 16 17"></polyline>
+                  <line x1="12" y1="12" x2="12" y2="21"></line>
+                </svg>
+                Sync Cloud
+              </button>
+
+              <button
+                class="btn btn-secondary btn-sm"
+                id="btn-export"
+                title="Export records"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Export
+              </button>
+
+              <button
+                class="btn btn-secondary btn-sm"
+                id="btn-settings"
+                title="Settings"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+                  ></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                Settings
+              </button>
+
+              <button
+                class="btn btn-secondary btn-sm"
+                id="btn-clear"
+                title="Reset all usage history"
+                aria-label="Reset all usage history"
+                style="color: #f43f5e"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 6h18"></path>
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          <!-- Key Metrics Grid -->
+          <section class="kpi-grid">
+            <div class="card kpi-card">
+              <div class="kpi-label">
+                <span>Total Tokens</span>
+                <span
+                  class="live-badge"
+                  style="font-size: 9px; padding: 2px 6px"
+                  >Live</span
+                >
+              </div>
+              <div class="kpi-value" id="kpi-total-tokens">128,450</div>
+              <div class="kpi-subtext">
+                <span id="sub-prompt-tokens">82.0K prompt (64%)</span>
+                <span>•</span>
+                <span id="sub-comp-tokens">46.4K output (36%)</span>
+              </div>
+            </div>
+
+            <div class="card kpi-card">
+              <div class="kpi-label">Total Cost</div>
+              <div class="kpi-value" id="kpi-total-cost" style="color: #2dd4bf">
+                $0.42
+              </div>
+              <div class="kpi-subtext">
+                <span id="sub-cached-tokens">12.4K cached discount</span>
+              </div>
+            </div>
+
+            <div class="card kpi-card">
+              <div class="kpi-label">Requests</div>
+              <div class="kpi-value" id="kpi-requests">24</div>
+              <div class="kpi-subtext">
+                <span id="sub-avg-latency">680ms avg latency</span>
+              </div>
+            </div>
+
+            <div class="card kpi-card">
+              <div class="kpi-label">Avg. Tokens</div>
+              <div class="kpi-value" id="kpi-avg-tokens">5.3K</div>
+              <div class="kpi-subtext">
+                <span>per API call</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Token Consumption Over Time (Interactive Area Chart) -->
+          <section class="card chart-section">
+            <div class="chart-header">
+              <div>
+                <div class="title-md" style="color: #ffffff">
+                  Token Usage Over Time
+                </div>
+                <div class="text-xs" style="margin-top: 2px">
+                  Daily token and cost breakdown
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 4px">
+                <button
+                  class="btn btn-secondary btn-sm active"
+                  id="toggle-chart-tokens"
+                  style="font-size: 11px"
+                >
+                  Tokens
+                </button>
+                <button
+                  class="btn btn-secondary btn-sm"
+                  id="toggle-chart-cost"
+                  style="font-size: 11px"
+                >
+                  Cost ($)
+                </button>
+              </div>
+            </div>
+
+            <div class="chart-wrapper">
+              <svg id="chart-svg" class="chart-svg"></svg>
+            </div>
+          </section>
+
+          <!-- Middle Row -->
+          <section class="analytics-grid">
+            <div class="card">
+              <div class="title-md" style="color: #ffffff; margin-bottom: 4px">
+                Model Breakdown
+              </div>
+              <div class="text-xs">
+                Token consumption and cost share by model
+              </div>
+              <div class="breakdown-list" id="model-breakdown-list"></div>
+            </div>
+
+            <div
+              class="card"
+              style="display: flex; flex-direction: column; gap: 16px"
+            >
+              <div>
+                <div
+                  class="title-md"
+                  style="color: #ffffff; margin-bottom: 4px"
+                >
+                  Provider Integrations
+                </div>
+                <div class="text-xs">Active LLM API endpoints and tools</div>
+                <div
+                  id="provider-cards-grid"
+                  style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 10px;
+                    margin-top: 12px;
+                  "
+                ></div>
+              </div>
+
+              <div
+                style="
+                  border-top: 1px solid var(--tl-border);
+                  padding-top: 12px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <span class="title-md" style="font-size: 13px; color: #ffffff"
+                    >Daily Budget Target</span
+                  >
+                  <span
+                    id="budget-percentage"
+                    style="font-weight: 700; color: #2dd4bf; font-size: 12px"
+                    >21%</span
+                  >
+                </div>
+                <div class="budget-bar-wrapper">
+                  <div class="budget-track">
+                    <div
+                      class="budget-fill"
+                      id="budget-bar"
+                      style="width: 21%"
+                    ></div>
+                  </div>
+                  <div
+                    class="text-xs"
+                    id="budget-text"
+                    style="color: var(--tl-text-muted)"
+                  >
+                    $0.42 of $2.00 daily limit
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Detailed Request History Table -->
+          <section class="card table-card">
+            <div class="table-toolbar">
+              <div>
+                <div class="title-md" style="color: #ffffff">
+                  Request History
+                </div>
+                <div class="text-xs">
+                  Recent API calls, token counts, cost, and latency
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 8px; align-items: center">
+                <input
+                  type="text"
+                  id="history-search"
+                  class="search-input"
+                  placeholder="Search prompts or models..."
+                />
+                <select
+                  id="history-provider-filter"
+                  class="search-input"
+                  style="min-width: 120px; cursor: pointer"
+                >
+                  <option value="all">All Providers</option>
+                  <option value="openai">OpenAI</option>
+                  <option value="anthropic">Anthropic</option>
+                  <option value="gemini">Google Gemini</option>
+                  <option value="copilot">Copilot</option>
+                  <option value="deepseek">DeepSeek</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="overflow-x: auto">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Provider</th>
+                    <th>Model</th>
+                    <th>Prompt / Task</th>
+                    <th>Tokens</th>
+                    <th>Cost</th>
+                    <th>Latency</th>
+                  </tr>
+                </thead>
+                <tbody id="history-tbody"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Mock VS Code API for standalone preview
+      window.acquireVsCodeApi = function () {
+        return {
+          postMessage: function (msg) {
+            console.log("[TokenLens PostMessage]:", msg);
+            if (msg.command === "openDashboard") {
+              alert(
+                "Inside VS Code, this opens the dashboard tab. In this preview, the dashboard is shown on the right!",
+              );
+            } else if (msg.command === "setTimeRange") {
+              activeRange = msg.range;
+              refreshAll();
+            } else if (msg.command === "showRequestDetails") {
+              alert(
+                `[Request Details]\nModel: ${msg.record.model}\nTokens: ${msg.record.totalTokens.toLocaleString()}\nCost: $${msg.record.estimatedCost.toFixed(4)}\nLatency: ${msg.record.latencyMs}ms\nPrompt: "${msg.record.promptSnippet}"`,
+              );
+            }
+          },
+        };
+      };
+
+      // State Mock
+      let todayTokens = 128450;
+      let todayCost = 0.42;
+      let todayRequests = 24;
+      let promptTokens = 82000;
+      let completionTokens = 46450;
+      let activeRange = "today";
+
+      const dailyPoints = [
+        {
+          dateKey: "2026-09-11",
+          dayLabel: "Mon",
+          formattedDate: "Sep 11",
+          tokens: 71000,
+          promptTokens: 48000,
+          completionTokens: 23000,
+          cost: 0.22,
+          requests: 15,
+        },
+        {
+          dateKey: "2026-09-12",
+          dayLabel: "Tue",
+          formattedDate: "Sep 12",
+          tokens: 63000,
+          promptTokens: 41000,
+          completionTokens: 22000,
+          cost: 0.19,
+          requests: 12,
+        },
+        {
+          dateKey: "2026-09-13",
+          dayLabel: "Wed",
+          formattedDate: "Sep 13",
+          tokens: 67000,
+          promptTokens: 43000,
+          completionTokens: 24000,
+          cost: 0.21,
+          requests: 14,
+        },
+        {
+          dateKey: "2026-09-14",
+          dayLabel: "Thu",
+          formattedDate: "Sep 14",
+          tokens: 42000,
+          promptTokens: 29000,
+          completionTokens: 13000,
+          cost: 0.14,
+          requests: 9,
+        },
+        {
+          dateKey: "2026-09-15",
+          dayLabel: "Fri",
+          formattedDate: "Sep 15",
+          tokens: 50000,
+          promptTokens: 33000,
+          completionTokens: 17000,
+          cost: 0.16,
+          requests: 11,
+        },
+        {
+          dateKey: "2026-09-16",
+          dayLabel: "Sat",
+          formattedDate: "Sep 16",
+          tokens: 25000,
+          promptTokens: 17000,
+          completionTokens: 8000,
+          cost: 0.08,
+          requests: 6,
+        },
+        {
+          dateKey: "2026-09-17",
+          dayLabel: "Sun",
+          formattedDate: "Sep 17",
+          tokens: 128450,
+          promptTokens: 82000,
+          completionTokens: 46450,
+          cost: 0.42,
+          requests: 24,
+        },
+      ];
+
+      const modelBreakdown = [
+        {
+          model: "gpt-4o",
+          provider: "openai",
+          tokens: 64200,
+          cost: 0.24,
+          percentage: 50.0,
+          requestCount: 11,
+        },
+        {
+          model: "claude-3-5-sonnet",
+          provider: "anthropic",
+          tokens: 38500,
+          cost: 0.14,
+          percentage: 30.0,
+          requestCount: 7,
+        },
+        {
+          model: "gemini-2.0-flash",
+          provider: "gemini",
+          tokens: 18000,
+          cost: 0.03,
+          percentage: 14.0,
+          requestCount: 4,
+        },
+        {
+          model: "deepseek-chat",
+          provider: "deepseek",
+          tokens: 7750,
+          cost: 0.01,
+          percentage: 6.0,
+          requestCount: 2,
+        },
+      ];
+
+      const providerBreakdown = [
+        {
+          provider: "openai",
+          name: "OpenAI",
+          tokens: 64200,
+          cost: 0.24,
+          percentage: 50.0,
+          requestCount: 11,
+        },
+        {
+          provider: "anthropic",
+          name: "Anthropic",
+          tokens: 38500,
+          cost: 0.14,
+          percentage: 30.0,
+          requestCount: 7,
+        },
+        {
+          provider: "gemini",
+          name: "Google Gemini",
+          tokens: 18000,
+          cost: 0.03,
+          percentage: 14.0,
+          requestCount: 4,
+        },
+        {
+          provider: "copilot",
+          name: "GitHub Copilot",
+          tokens: 12000,
+          cost: 0.0,
+          percentage: 0.0,
+          requestCount: 5,
+        },
+      ];
+
+      let recentRequests = [
+        {
+          id: "req_1",
+          timestamp: Date.now() - 1000 * 60 * 4,
+          provider: "openai",
+          model: "gpt-4o",
+          promptSnippet:
+            "Refactor authentication middleware to use JWT refresh tokens",
+          promptTokens: 3200,
+          completionTokens: 1120,
+          totalTokens: 4320,
+          estimatedCost: 0.0192,
+          latencyMs: 640,
+        },
+        {
+          id: "req_2",
+          timestamp: Date.now() - 1000 * 60 * 18,
+          provider: "anthropic",
+          model: "claude-3-5-sonnet",
+          promptSnippet:
+            "Optimize SQL query with composite indexes for billing table",
+          promptTokens: 4100,
+          completionTokens: 1450,
+          totalTokens: 5550,
+          estimatedCost: 0.034,
+          latencyMs: 820,
+        },
+        {
+          id: "req_3",
+          timestamp: Date.now() - 1000 * 60 * 35,
+          provider: "gemini",
+          model: "gemini-2.0-flash",
+          promptSnippet:
+            "Explain race condition in async distributed lock pattern",
+          promptTokens: 2800,
+          completionTokens: 900,
+          totalTokens: 3700,
+          estimatedCost: 0.0006,
+          latencyMs: 390,
+        },
+        {
+          id: "req_4",
+          timestamp: Date.now() - 1000 * 60 * 70,
+          provider: "copilot",
+          model: "copilot-gpt-4o",
+          promptSnippet: "[COPILOT] Code completion in formatters.ts",
+          promptTokens: 1400,
+          completionTokens: 320,
+          totalTokens: 1720,
+          estimatedCost: 0.0,
+          latencyMs: 510,
+        },
+        {
+          id: "req_5",
+          timestamp: Date.now() - 1000 * 60 * 110,
+          provider: "deepseek",
+          model: "deepseek-chat",
+          promptSnippet:
+            "Generate regex pattern to validate E.164 international numbers",
+          promptTokens: 1800,
+          completionTokens: 450,
+          totalTokens: 2250,
+          estimatedCost: 0.0004,
+          latencyMs: 440,
+        },
+      ];
+
+      function refreshAll() {
+        // Broadcast to sidebar
+        window.dispatchEvent(
+          new MessageEvent("message", {
+            data: {
+              type: "stateUpdate",
+              state: {
+                todayTokens,
+                todayCost,
+                todayRequests,
+                promptTokens,
+                completionTokens,
+                cachedTokens: 12400,
+                currencySymbol: "$",
+                dailyBudget: 2.0,
+                sparkline: dailyPoints.map((p) => p.tokens),
+              },
+            },
+          }),
+        );
+
+        // Broadcast to dashboard
+        window.dispatchEvent(
+          new MessageEvent("message", {
+            data: {
+              type: "stateUpdate",
+              state: {
+                summary: {
+                  period: activeRange,
+                  totalTokens: todayTokens,
+                  promptTokens,
+                  completionTokens,
+                  cachedTokens: 12400,
+                  totalCost,
+                  requestCount: todayRequests,
+                  avgTokensPerRequest: Math.round(todayTokens / todayRequests),
+                  avgLatencyMs: 640,
+                  dailyBudget: 2.0,
+                  todayCost,
+                  todayTokens,
+                },
+                dailyPoints,
+                modelBreakdown,
+                providerBreakdown,
+                recentRequests,
+                timeRange: activeRange,
+                currencySymbol: "$",
+                dailyBudget: 2.0,
+                monthlyBudget: 50.0,
+              },
+            },
+          }),
+        );
+      }
+
+      function simulateRandomRequest() {
+        const addedPrompt = Math.floor(Math.random() * 3000) + 1000;
+        const addedComp = Math.floor(Math.random() * 1200) + 400;
+        const total = addedPrompt + addedComp;
+        const cost = Number(
+          (
+            (addedPrompt / 1000000) * 2.5 +
+            (addedComp / 1000000) * 10.0
+          ).toFixed(4),
+        );
+
+        todayTokens += total;
+        todayCost = Number((todayCost + cost).toFixed(4));
+        todayRequests += 1;
+        promptTokens += addedPrompt;
+        completionTokens += addedComp;
+        dailyPoints[dailyPoints.length - 1].tokens = todayTokens;
+        dailyPoints[dailyPoints.length - 1].cost = todayCost;
+
+        recentRequests.unshift({
+          id: "req_" + Math.random().toString(36).substring(2, 8),
+          timestamp: Date.now(),
+          provider: "openai",
+          model: "gpt-4o",
+          promptSnippet:
+            "Simulated request: " + new Date().toLocaleTimeString(),
+          promptTokens: addedPrompt,
+          completionTokens: addedComp,
+          totalTokens: total,
+          estimatedCost: cost,
+          latencyMs: Math.floor(Math.random() * 800) + 400,
+        });
+
+        refreshAll();
+      }
+
+      document
+        .getElementById("btn-sidebar-sync")
+        ?.addEventListener("click", () => {
+          alert(
+            "In VS Code, this imports your historical token usage from OpenAI & Anthropic API keys!",
+          );
+        });
+      document
+        .getElementById("btn-sidebar-refresh")
+        ?.addEventListener("click", refreshAll);
+    </script>
+
+    <!-- Load sidebar and dashboard logic -->
+    <script src="media/sidebar.js"></script>
+    <script src="media/dashboard.js"></script>
+    <script>
+      setTimeout(refreshAll, 100);
+    </script>
+  </body>
+</html>

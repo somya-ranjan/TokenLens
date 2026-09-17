@@ -1,0 +1,168 @@
+{
+  "name": "tokenlens",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "bunx @vscode/vsce package --allow-missing-repository -o tokenlens.vsix",
+    "test": "bun test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "displayName": "TokenLens - AI Usage & Cost Tracker",
+  "description": "Track LLM token usage, costs, and latency for OpenAI, Anthropic, Gemini, and Copilot.",
+  "publisher": "tokenlens",
+  "icon": "media/icon.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/somya-ranjan/TokenLens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/somya-ranjan/TokenLens/issues"
+  },
+  "homepage": "https://github.com/somya-ranjan/TokenLens#readme",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Machine Learning",
+    "Productivity",
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "tokens",
+    "openai",
+    "anthropic",
+    "gemini",
+    "copilot",
+    "usage",
+    "cost",
+    "llm"
+  ],
+  "activationEvents": [
+    "onView:aiUsageMonitor",
+    "onCommand:aiUsageMonitor.openDashboard",
+    "onCommand:aiUsageMonitor.syncCloudUsage",
+    "onCommand:aiUsageMonitor.clearUsage",
+    "onCommand:aiUsageMonitor.exportData",
+    "onCommand:aiUsageMonitor.showLogs",
+    "onCommand:tokenlens.setOpenAiKey",
+    "onCommand:tokenlens.setAnthropicKey",
+    "onCommand:tokenlens.clearKeys"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aiUsage",
+          "title": "TokenLens",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "aiUsage": [
+        {
+          "type": "webview",
+          "id": "aiUsageMonitor",
+          "name": "Token Usage"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "aiUsageMonitor.openDashboard",
+        "title": "TokenLens: Open Full Dashboard",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "aiUsageMonitor.syncCloudUsage",
+        "title": "TokenLens: Sync Cloud Account Usage",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "aiUsageMonitor.clearUsage",
+        "title": "TokenLens: Reset Usage Data",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "aiUsageMonitor.exportData",
+        "title": "TokenLens: Export Usage (JSON)",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "tokenlens.setOpenAiKey",
+        "title": "TokenLens: Set OpenAI API Key (Secure Keychain)",
+        "icon": "$(key)"
+      },
+      {
+        "command": "tokenlens.setAnthropicKey",
+        "title": "TokenLens: Set Anthropic API Key (Secure Keychain)",
+        "icon": "$(key)"
+      },
+      {
+        "command": "tokenlens.clearKeys",
+        "title": "TokenLens: Clear Stored API Keys from Keychain",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "aiUsageMonitor.showLogs",
+        "title": "TokenLens: Show Output Logs",
+        "icon": "$(output)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "aiUsageMonitor.openDashboard",
+          "when": "view == aiUsageMonitor",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "TokenLens Monitor",
+      "properties": {
+        "tokenlens.dailyBudget": {
+          "type": "number",
+          "default": 2,
+          "description": "Daily budget threshold in USD for warnings and indicators"
+        },
+        "tokenlens.monthlyBudget": {
+          "type": "number",
+          "default": 50,
+          "description": "Monthly budget threshold in USD"
+        },
+        "tokenlens.currencySymbol": {
+          "type": "string",
+          "default": "$",
+          "description": "Currency symbol to display"
+        },
+        "tokenlens.trackCopilot": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable experimental tracking/logging for Copilot and local editor assistants"
+        },
+        "tokenlens.openaiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI API Key (requires 'api.usage.read' scope or Admin key to fetch usage)"
+        },
+        "tokenlens.anthropicApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Anthropic Admin API Key (sk-ant-admin...) to fetch workspace usage & cost"
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.9.7",
+    "typescript": "^5.3.3"
+  }
+}

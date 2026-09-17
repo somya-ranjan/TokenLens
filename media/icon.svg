@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <defs>
+    <linearGradient id="lensGrad" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2DD4BF" />
+      <stop offset="100%" stop-color="#0D9488" />
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#14B8A6" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#0F766E" stop-opacity="0.05" />
+    </linearGradient>
+  </defs>
+  
+  <circle cx="32" cy="32" r="28" stroke="url(#lensGrad)" stroke-width="2.5" stroke-dasharray="8 4" opacity="0.4" />
+  <circle cx="32" cy="32" r="22" fill="url(#glowGrad)" />
+  <circle cx="32" cy="32" r="16" stroke="url(#lensGrad)" stroke-width="2.5" />
+  <circle cx="32" cy="32" r="6" fill="url(#lensGrad)" />
+  <circle cx="32" cy="10" r="3" fill="#2DD4BF" />
+  <circle cx="54" cy="32" r="3" fill="#2DD4BF" />
+  <circle cx="32" cy="54" r="3" fill="#0D9488" />
+  <circle cx="10" cy="32" r="3" fill="#0D9488" />
+  <line x1="32" y1="20" x2="32" y2="24" stroke="#2DD4BF" stroke-width="2" stroke-linecap="round" />
+  <line x1="32" y1="40" x2="32" y2="44" stroke="#0D9488" stroke-width="2" stroke-linecap="round" />
+  <line x1="20" y1="32" x2="24" y2="32" stroke="#2DD4BF" stroke-width="2" stroke-linecap="round" />
+  <line x1="40" y1="32" x2="44" y2="32" stroke="#0D9488" stroke-width="2" stroke-linecap="round" />
+</svg>

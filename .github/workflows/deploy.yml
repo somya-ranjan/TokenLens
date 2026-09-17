@@ -1,0 +1,73 @@
+name: Production Release & Deploy
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag (e.g. v0.1.0)"
+        required: true
+        default: "v0.1.0"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build, Audit & Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Verify code style
+        run: bun run format:check
+
+      - name: Run automated test suite
+        run: bun run test
+
+      - name: Build extension package (.vsix)
+        run: bun run build
+
+      # Generate cryptographic checksum for release artifact verification
+      - name: Generate SHA-256 Checksum
+        run: sha256sum tokenlens.vsix > tokenlens.vsix.sha256
+
+      # Automatically create GitHub Release with VSIX and SHA-256 checksum
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.release_tag || github.ref_name }}
+          name: ${{ github.event.inputs.release_tag || github.ref_name }}
+          files: |
+            tokenlens.vsix
+            tokenlens.vsix.sha256
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Publish to Visual Studio Marketplace if secret is present
+      - name: Publish to VS Code Marketplace
+        if: env.VSCE_PAT != ''
+        run: bunx @vscode/vsce publish -p ${{ secrets.VSCE_PAT }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      # Publish to Open VSX Registry if secret is present
+      - name: Publish to Open VSX
+        if: env.OVSX_PAT != ''
+        run: bunx ovsx publish tokenlens.vsix -p ${{ secrets.OVSX_PAT }}
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
