@@ -78,19 +78,16 @@ jobs:
         with:
           name: release-assets
 
-      # Publish GitHub Release with VSIX binary and SHA-256 checksum file
+      # Step 2: Publish GitHub Release using native GitHub CLI (Fast, zero Node stream hang)
       - name: Publish GitHub Release with VSIX binary
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.inputs.release_tag || github.ref_name }}
-          name: ${{ github.event.inputs.release_tag || github.ref_name }}
-          files: |
-            tokenlens.vsix
-            tokenlens.vsix.sha256
-          prerelease: false
-          generate_release_notes: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.event.inputs.release_tag || github.ref_name }}
+        run: |
+          gh release create "$TAG_NAME" tokenlens.vsix tokenlens.vsix.sha256 \
+            --title "$TAG_NAME" \
+            --generate-notes || \
+          gh release upload "$TAG_NAME" tokenlens.vsix tokenlens.vsix.sha256 --clobber
 
   # ============================================================================
   # STAGE 2B: Publish to Visual Studio Marketplace
