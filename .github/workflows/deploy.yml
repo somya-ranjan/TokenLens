@@ -100,6 +100,7 @@ jobs:
   publish-marketplace:
     name: publish-marketplace
     needs: [build]
+    if: ${{ secrets.VSCE_PAT != '' }}
     runs-on: ubuntu-latest
     steps:
       # Step 1: Pull repository source code
@@ -118,17 +119,9 @@ jobs:
         with:
           name: release-assets
 
-      # Step 4: Publish to Visual Studio Marketplace if secret (VSCE_PAT) is present
+      # Step 4: Publish to Visual Studio Marketplace
       - name: Publish to Visual Studio Marketplace
-        if: env.VSCE_PAT != ''
         run: bunx @vscode/vsce publish -p ${{ secrets.VSCE_PAT }}
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-
-      # Step 5: Inform if secret is not yet configured
-      - name: Skip marketplace publish if token not set
-        if: env.VSCE_PAT == ''
-        run: echo "VSCE_PAT secret not configured. Skipping Visual Studio Marketplace upload."
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
@@ -138,6 +131,7 @@ jobs:
   publish-openvsx:
     name: publish-openvsx
     needs: [build]
+    if: ${{ secrets.OVSX_PAT != '' }}
     runs-on: ubuntu-latest
     steps:
       # Step 1: Install Bun runtime environment
@@ -152,17 +146,9 @@ jobs:
         with:
           name: release-assets
 
-      # Step 3: Publish to Open VSX Registry if secret (OVSX_PAT) is present
+      # Step 3: Publish to Open VSX Registry
       - name: Publish to Open VSX Registry
-        if: env.OVSX_PAT != ''
         run: bunx ovsx publish tokenlens.vsix -p ${{ secrets.OVSX_PAT }}
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
-
-      # Step 4: Inform if secret is not yet configured
-      - name: Skip Open VSX publish if token not set
-        if: env.OVSX_PAT == ''
-        run: echo "OVSX_PAT secret not configured. Skipping Open VSX upload."
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
 
