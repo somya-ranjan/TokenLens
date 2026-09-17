@@ -72,16 +72,21 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Download release artifacts from Stage 1
+      # Step 1: Pull repository source code for git context
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Download release artifacts from Stage 1
       - name: Download release artifacts
         uses: actions/download-artifact@v4
         with:
           name: release-assets
 
-      # Step 2: Publish GitHub Release using native GitHub CLI (Fast, zero Node stream hang)
+      # Step 3: Publish GitHub Release using native GitHub CLI (Fast, zero Node stream hang)
       - name: Publish GitHub Release with VSIX binary
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           TAG_NAME: ${{ github.event.inputs.release_tag || github.ref_name }}
         run: |
           gh release create "$TAG_NAME" tokenlens.vsix tokenlens.vsix.sha256 \
