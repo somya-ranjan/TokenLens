@@ -111,10 +111,12 @@ jobs:
           GH_REPO: ${{ github.repository }}
           TAG_NAME: ${{ github.event.inputs.release_tag || github.ref_name }}
         run: |
+          # Delete any conflicting or stuck release on GitHub for this tag first
+          gh release delete "$TAG_NAME" --yes || true
+          # Create fresh release and upload assets
           gh release create "$TAG_NAME" tokenlens.vsix tokenlens.vsix.sha256 \
             --title "$TAG_NAME" \
-            --generate-notes || \
-          gh release upload "$TAG_NAME" tokenlens.vsix tokenlens.vsix.sha256 --clobber
+            --generate-notes
 
   # ============================================================================
   # STAGE 2B: Publish to Visual Studio Marketplace
