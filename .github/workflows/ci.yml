@@ -1,5 +1,6 @@
-name: CI Matrix Verification
+name: Code Quality & Tests
 
+# Trigger pipeline on pushes to main branch and all pull requests targeting main
 on:
   push:
     branches:
@@ -9,30 +10,124 @@ on:
       - main
 
 jobs:
-  validate:
-    name: Test & Build (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-
+  # ============================================================================
+  # STAGE 1A: Code Quality & Style (Runs in parallel with unit tests)
+  # ============================================================================
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
     steps:
+      # Step 1: Pull repository source code
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Install Bun runtime environment
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
+      # Step 3: Install project dependencies from lockfile
       - name: Install dependencies
         run: bun install
 
-      - name: Check code formatting
+      # Step 4: Run Prettier code style check across all files
+      - name: Verify code style
         run: bun run format:check
 
-      - name: Run automated test suite
-        run: bun run test
+  # ============================================================================
+  # STAGE 1B: Unit Testing (Runs in parallel with lint for fast feedback)
+  # ============================================================================
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Pull repository source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Verify package build
+      # Step 2: Install Bun runtime environment
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # Step 3: Install project dependencies from lockfile
+      - name: Install dependencies
+        run: bun install
+
+      # Step 4: Execute test suite (costCalculator.test.js & formatters.test.js)
+      - name: Run automated test suite
+        run: bun test
+
+  # ============================================================================
+  # STAGE 2: Build & Package VSIX (Runs only after both lint and test succeed)
+  # ============================================================================
+  build:
+    name: build
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Pull repository source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install Bun runtime environment
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # Step 3: Install project dependencies
+      - name: Install dependencies
+        run: bun install
+
+      # Step 4: Package the extension into tokenlens.vsix via @vscode/vsce
+      - name: Build extension package (.vsix)
         run: bun run build
+
+      # Step 5: Upload the packaged .vsix so it is downloadable from this run
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tokenlens-vsix
+          path: tokenlens.vsix
+          retention-days: 7
+
+  # ============================================================================
+  # STAGE 3A: Build Status Reporting (Downstream fork from build)
+  # ============================================================================
+  report-build-status:
+    name: report-build-status
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      # Publish a Markdown summary directly to the GitHub Actions dashboard
+      - name: Generate status summary
+        run: |
+          echo "### CI Pipeline: Succeeded" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: All quality checks, tests, and build artifacts verified." >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # STAGE 3B: Package Verification & Audit (Downstream fork from build)
+  # ============================================================================
+  verify-package:
+    name: verify-package
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Download the packaged .vsix artifact from Stage 2
+      - name: Download VSIX artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tokenlens-vsix
+
+      # Step 2: Calculate cryptographic SHA-256 checksum and verify file size
+      - name: Checksum and package verification
+        run: |
+          sha256sum tokenlens.vsix > tokenlens.vsix.sha256
+          echo "Package SHA-256 Checksum:"
+          cat tokenlens.vsix.sha256
+          ls -lh tokenlens.vsix

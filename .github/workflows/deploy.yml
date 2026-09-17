@@ -1,5 +1,6 @@
 name: Production Release & Deploy
 
+# Trigger deployment on git version tags (e.g. v0.1.0) or manual workflow dispatch
 on:
   push:
     tags:
@@ -11,40 +12,108 @@ on:
         required: true
         default: "v0.1.0"
 
+# Grant write permissions to create GitHub Releases and upload release assets
 permissions:
   contents: write
 
 jobs:
-  release:
-    name: Build, Audit & Publish
+  # ============================================================================
+  # STAGE 1: Build, Test, and Artifact Packaging
+  # ============================================================================
+  build:
+    name: build
     runs-on: ubuntu-latest
-
     steps:
+      # Step 1: Pull repository source code
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Install Bun runtime environment
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
+      # Step 3: Install project dependencies from lockfile
       - name: Install dependencies
         run: bun install
 
+      # Step 4: Run Prettier formatting check
       - name: Verify code style
         run: bun run format:check
 
+      # Step 5: Run automated test suite
       - name: Run automated test suite
-        run: bun run test
+        run: bun test
 
+      # Step 6: Compile and package extension into production tokenlens.vsix
       - name: Build extension package (.vsix)
         run: bun run build
 
-      # Generate cryptographic checksum for release artifact verification
+      # Step 7: Generate cryptographic checksum for release artifact verification
       - name: Generate SHA-256 Checksum
         run: sha256sum tokenlens.vsix > tokenlens.vsix.sha256
 
-      # Automatically create GitHub Release with VSIX and SHA-256 checksum
+      # Step 8: Upload release assets to workflow artifacts for downstream jobs
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets
+          path: |
+            tokenlens.vsix
+            tokenlens.vsix.sha256
+          retention-days: 7
+
+  # ============================================================================
+  # STAGE 2A: Report Release Build Status (Downstream fork from build)
+  # ============================================================================
+  report-build-status:
+    name: report-build-status
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Download release artifacts from Stage 1
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+
+      # Step 2: Publish a rich summary card with checksum to the release summary
+      - name: Generate release summary
+        run: |
+          echo "### Release Build Succeeded" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag**: \`${{ github.event.inputs.release_tag || github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Checksum**:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          cat tokenlens.vsix.sha256 >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # STAGE 2B: Publish to GitHub Releases & Extension Marketplaces (Downstream fork)
+  # ============================================================================
+  deploy:
+    name: deploy
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Pull repository source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install Bun runtime environment
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # Step 3: Download release artifacts from Stage 1
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+
+      # Step 4: Publish GitHub Release with VSIX binary and SHA-256 checksum file
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -58,14 +127,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Publish to Visual Studio Marketplace if secret is present
+      # Step 5: Publish to Visual Studio Marketplace if secret (VSCE_PAT) is present
       - name: Publish to VS Code Marketplace
         if: env.VSCE_PAT != ''
         run: bunx @vscode/vsce publish -p ${{ secrets.VSCE_PAT }}
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
-      # Publish to Open VSX Registry if secret is present
+      # Step 6: Publish to Open VSX Registry if secret (OVSX_PAT) is present
       - name: Publish to Open VSX
         if: env.OVSX_PAT != ''
         run: bunx ovsx publish tokenlens.vsix -p ${{ secrets.OVSX_PAT }}
