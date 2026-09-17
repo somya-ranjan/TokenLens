@@ -104,19 +104,19 @@ jobs:
         with:
           name: release-assets
 
-      # Step 3: Publish GitHub Release using native GitHub CLI (Fast, zero Node stream hang)
+      # Step 3: Publish GitHub Release with VSIX binary (uses v3 with Node 24 upload hardening)
       - name: Publish GitHub Release with VSIX binary
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.event.inputs.release_tag || github.ref_name }}
+          name: ${{ github.event.inputs.release_tag || github.ref_name }}
+          files: |
+            tokenlens.vsix
+            tokenlens.vsix.sha256
+          prerelease: false
+          generate_release_notes: true
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          TAG_NAME: ${{ github.event.inputs.release_tag || github.ref_name }}
-        run: |
-          # Delete any conflicting or stuck release on GitHub for this tag first
-          gh release delete "$TAG_NAME" --yes || true
-          # Create fresh release and upload assets
-          gh release create "$TAG_NAME" tokenlens.vsix tokenlens.vsix.sha256 \
-            --title "$TAG_NAME" \
-            --generate-notes
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ============================================================================
   # STAGE 2B: Publish to Visual Studio Marketplace
